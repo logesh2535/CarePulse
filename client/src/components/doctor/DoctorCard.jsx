@@ -11,8 +11,12 @@ const DoctorCard = ({ doctor }) => {
       {/* Header Profile Image & Badge */}
       <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', marginBottom: '16px' }}>
         <img
-          src={doctor.profileImage}
+          src={doctor.profileImage || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&auto=format&fit=crop&q=80'}
           alt={doctorName}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&auto=format&fit=crop&q=80';
+          }}
           style={{
             width: '74px',
             height: '74px',

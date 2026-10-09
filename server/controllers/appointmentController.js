@@ -1,6 +1,7 @@
 const Appointment = require('../models/Appointment');
 const Patient = require('../models/Patient');
 const Doctor = require('../models/Doctor');
+const { sendAppointmentNotification } = require('../utils/emailService');
 
 // @desc    Book a new appointment (Patient only)
 // @route   POST /api/appointments
@@ -75,6 +76,9 @@ exports.bookAppointment = async (req, res) => {
         populate: { path: 'userId', select: 'name email phone' }
       });
 
+    // Send email notification to seeker and doctor
+    sendAppointmentNotification({ appointment: populatedAppointment, actionType: 'Created/Applied' });
+
     return res.status(201).json({
       success: true,
       message: 'Appointment booked successfully! Status is Pending doctor approval.',
@@ -131,6 +135,7 @@ exports.getAppointments = async (req, res) => {
       data: appointments
     });
   } catch (error) {
+    console.error('Get Appointments Error:', error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -162,6 +167,7 @@ exports.getAppointmentById = async (req, res) => {
       data: appointment
     });
   } catch (error) {
+    console.error('Get Appointment By ID Error:', error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -208,12 +214,16 @@ exports.updateAppointmentStatus = async (req, res) => {
         populate: { path: 'userId', select: 'name email phone' }
       });
 
+    // Send email notification to seeker and doctor
+    sendAppointmentNotification({ appointment: updatedAppointment, actionType: 'Updated' });
+
     return res.json({
       success: true,
       message: `Appointment status updated to ${status}`,
       data: updatedAppointment
     });
   } catch (error) {
+    console.error('Update Appointment Status Error:', error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -238,11 +248,28 @@ exports.cancelAppointment = async (req, res) => {
     appointment.status = 'Cancelled';
     await appointment.save();
 
+    const populatedAppointment = await Appointment.findById(appointment._id)
+      .populate({
+        path: 'doctorId',
+        populate: [
+          { path: 'userId', select: 'name email phone' },
+          { path: 'specialization', select: 'name' }
+        ]
+      })
+      .populate({
+        path: 'patientId',
+        populate: { path: 'userId', select: 'name email phone' }
+      });
+
+    // Send email notification to seeker and doctor
+    sendAppointmentNotification({ appointment: populatedAppointment, actionType: 'Cancelled' });
+
     return res.json({
       success: true,
       message: 'Appointment cancelled successfully'
     });
   } catch (error) {
+    console.error('Cancel Appointment Error:', error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };

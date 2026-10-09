@@ -69,8 +69,12 @@ const DoctorDetails = () => {
         <div className="card" style={{ marginBottom: '30px', padding: '30px' }}>
           <div style={{ display: 'flex', gap: '30px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
             <img
-              src={doctor.profileImage}
+              src={doctor.profileImage || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&auto=format&fit=crop&q=80'}
               alt={doctorName}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&auto=format&fit=crop&q=80';
+              }}
               style={{
                 width: '140px',
                 height: '140px',

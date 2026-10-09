@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('user', JSON.stringify(updatedUser));
           }
         } catch (err) {
-          console.error('Auth verify failed:', err);
+          // Token is invalid/expired - clear stale auth state silently
           logout();
         }
       }

@@ -144,7 +144,7 @@ const Login = () => {
               <div style={{ display: 'flex', gap: '6px', justifyContent: 'center' }}>
                 <button
                   type="button"
-                  onClick={() => fillDemoAccount('patient123@gmail.com', 'patient123')}
+                  onClick={() => fillDemoAccount('john.doe@gmail.com', 'patient123')}
                   className="btn btn-secondary btn-sm"
                   style={{ fontSize: '11px', padding: '4px 8px' }}
                 >
